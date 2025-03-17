@@ -3,6 +3,8 @@ import { NextIntlClientProvider } from 'next-intl'
 import { getLocale, getMessages } from 'next-intl/server'
 
 import { ApolloClientProvider } from '@/providers/ApolloClientProvider'
+import { ThemeProvider } from '@/providers/ThemeProvider'
+import { ToastProvider } from '@/providers/ToastProvider'
 
 import '../styles/globals.css'
 
@@ -19,7 +21,14 @@ export default async function RootLayout({
 			<body className={GeistSans.variable}>
 				<ApolloClientProvider>
 					<NextIntlClientProvider messages={messages}>
-						{children}
+						<ThemeProvider
+							attribute='class'
+							defaultTheme='dark'
+							disableTransitionOnChange
+						>
+							<ToastProvider />
+							{children}
+						</ThemeProvider>
 					</NextIntlClientProvider>
 				</ApolloClientProvider>
 			</body>

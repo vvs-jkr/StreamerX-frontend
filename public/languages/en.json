@@ -174,7 +174,7 @@
 	},
 	"auth": {
 		"register": {
-			"heading": "Register on TeaStream",
+			"heading": "Register on StreamerX",
 			"backButtonLabel": "Already have an account? Sign in",
 			"usernameLabel": "Username",
 			"usernameDescription": "This is the name other users will know you by. You can change it later.",
@@ -193,7 +193,7 @@
 			"errorMessage": "Verification error"
 		},
 		"login": {
-			"heading": "Login to TeaStream",
+			"heading": "Login to StreamerX",
 			"backButtonLabel": "Don't have an account? Sign up!",
 			"loginLabel": "Login",
 			"loginDescription": "Your username or email that you used during registration.",
@@ -393,7 +393,7 @@
 			"notifications": {
 				"header": {
 					"heading": "Notifications",
-					"description": "Configure how you want to receive notifications from TeaStream. You will receive notifications about the start of streams on the channels you are subscribed to, as well as about new followers."
+					"description": "Configure how you want to receive notifications from StreamerX. You will receive notifications about the start of streams on the channels you are subscribed to, as well as about new followers."
 				},
 				"siteNotifications": {
 					"heading": "Site Notifications",
@@ -401,7 +401,7 @@
 				},
 				"telegramNotifications": {
 					"heading": "Telegram Notifications",
-					"description": "If you enable notifications via Telegram, your TeaStream account will be linked to your Telegram account, and you will receive messages about new subscriptions, new streams, password resets, and two-factor authentication codes."
+					"description": "If you enable notifications via Telegram, your StreamerX account will be linked to your Telegram account, and you will receive messages about new subscriptions, new streams, password resets, and two-factor authentication codes."
 				},
 				"successMessage": "Notification settings have been successfully updated",
 				"errorMessage": "Error when updating notification settings"
@@ -409,7 +409,7 @@
 			"sessions": {
 				"header": {
 					"heading": "Sessions",
-					"description": "Sessions are devices that you are currently using or have used to access your TeaStream account. Here you can see the active sessions right now."
+					"description": "Sessions are devices that you are currently using or have used to access your StreamerX account. Here you can see the active sessions right now."
 				},
 				"info": {
 					"current": "Current session",
