@@ -10,61 +10,61 @@ import { getTranslations } from 'next-intl/server'
 // 	type FindRandomStreamsQuery
 // } from '@/graphql/generated/output'
 
-// import { SERVER_URL } from '@/libs/constants/url.constants'
+import { SERVER_URL } from '@/libs/constants/url.constants'
 
-// async function findRandomStreams() {
-// 	try {
-// 		const query = FindRandomStreamsDocument.loc?.source.body
+async function findRandomStreams() {
+	try {
+		const query = FindRandomStreamsDocument.loc?.source.body
 
-// 		const response = await fetch(SERVER_URL, {
-// 			method: 'POST',
-// 			headers: {
-// 				'Content-Type': 'application/json'
-// 			},
-// 			body: JSON.stringify({ query }),
-// 			next: {
-// 				revalidate: 30
-// 			}
-// 		})
+		const response = await fetch(SERVER_URL, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({ query }),
+			next: {
+				revalidate: 30
+			}
+		})
 
-// 		const data = await response.json()
+		const data = await response.json()
 
-// 		return {
-// 			streams: data.data
-// 				.findRandomStreams as FindRandomStreamsQuery['findRandomStreams']
-// 		}
-// 	} catch (error) {
-// 		console.log(error)
-// 		throw new Error('Ошибка при получении стримов')
-// 	}
-// }
+		return {
+			streams: data.data
+				.findRandomStreams as FindRandomStreamsQuery['findRandomStreams']
+		}
+	} catch (error) {
+		console.log(error)
+		throw new Error('Ошибка при получении стримов')
+	}
+}
 
-// async function findRandomCategories() {
-// 	try {
-// 		const query = FindRandomCategoriesDocument.loc?.source.body
+async function findRandomCategories() {
+	try {
+		const query = FindRandomCategoriesDocument.loc?.source.body
 
-// 		const response = await fetch(SERVER_URL, {
-// 			method: 'POST',
-// 			headers: {
-// 				'Content-Type': 'application/json'
-// 			},
-// 			body: JSON.stringify({ query }),
-// 			next: {
-// 				revalidate: 30
-// 			}
-// 		})
+		const response = await fetch(SERVER_URL, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({ query }),
+			next: {
+				revalidate: 30
+			}
+		})
 
-// 		const data = await response.json()
+		const data = await response.json()
 
-// 		return {
-// 			categories: data.data
-// 				.findRandomCategories as FindRandomCategoriesQuery['findRandomCategories']
-// 		}
-// 	} catch (error) {
-// 		console.log(error)
-// 		throw new Error('Ошибка при получении категорий')
-// 	}
-// }
+		return {
+			categories: data.data
+				.findRandomCategories as FindRandomCategoriesQuery['findRandomCategories']
+		}
+	} catch (error) {
+		console.log(error)
+		throw new Error('Ошибка при получении категорий')
+	}
+}
 
 export default async function HomePage() {
 	const t = await getTranslations('home')
@@ -81,17 +81,4 @@ export default async function HomePage() {
 			/>
 		</div>
 	)
-}
-
-export default function SiteLayout({children}: PropsWithChildren<unknown>) {
-  return <div className="flex h-full flex-col">
-    <div className="flex-1">
-      <div className="fixed inset-y-0 z-50 h-[75px] w-full">
-        <Header />
-      </div>
-      <main className="mt-[75px]">
-        {children}
-      </main>
-    </div>
-  </div>
 }
