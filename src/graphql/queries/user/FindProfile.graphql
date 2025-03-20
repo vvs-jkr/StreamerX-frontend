@@ -1,0 +1,23 @@
+query FindProfile {
+	findProfile {
+		id
+		username
+		displayName
+		email
+		avatar
+		bio
+		isVerified
+		isTotpEnabled
+		notificationSettings {
+			siteNotifications
+			telegramNotifications
+		}
+		stream {
+			serverUrl
+			streamKey
+			isChatEnabled
+			isChatFollowersOnly
+			isChatPremiumFollowersOnly
+		}
+	}
+}
