@@ -5,13 +5,14 @@ import {
 	useFindProfileQuery
 } from '@/graphql/generated/output'
 
-import { useAuth } from 'c:/Users/joker/Downloads/full-stack-kopiya-twitch/full-stack-kopiya-twitch/frontend/src/hooks/useAuth'
+import { useAuth } from './useAuth'
 
 export function useCurrent() {
 	const { isAuthenticated, exit } = useAuth()
 
 	const { data, loading, refetch, error } = useFindProfileQuery({
-		skip: !isAuthenticated
+		skip: !isAuthenticated,
+    fetchPolicy: 'network-only'
 	})
 	const [clear] = useClearSessionCookieMutation()
 

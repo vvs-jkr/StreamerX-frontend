@@ -27,6 +27,9 @@ interface ChannelAvatarProps extends VariantProps<typeof avatarSizes> {
 }
 
 export function ChannelAvatar({ size, channel, isLive }: ChannelAvatarProps) {
+  const avatarUrl = getMediaSource(channel.avatar);
+    console.log('URL для загрузки аватара:', avatarUrl)
+
 	return (
 		<div className='relative'>
 			<Avatar
@@ -36,7 +39,7 @@ export function ChannelAvatar({ size, channel, isLive }: ChannelAvatarProps) {
 				)}
 			>
 				<AvatarImage
-					src={getMediaSource(channel.avatar)}
+					src={avatarUrl}
 					className='object-cover'
 				/>
 				<AvatarFallback
@@ -45,7 +48,7 @@ export function ChannelAvatar({ size, channel, isLive }: ChannelAvatarProps) {
 						size === 'lg' && 'text-2xl'
 					)}
 				>
-					{channel.username[0]}
+					{channel && channel.username ? channel.username[0] : ''}
 				</AvatarFallback>
 			</Avatar>
 		</div>
