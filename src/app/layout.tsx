@@ -3,6 +3,8 @@ import type { Metadata } from 'next'
 import { NextIntlClientProvider } from 'next-intl'
 import { getLocale, getMessages } from 'next-intl/server'
 
+import { ColorSwitcher } from '@/components/ui/elements/ColorSwitcher'
+
 import { ApolloClientProvider } from '@/providers/ApolloClientProvider'
 import { ThemeProvider } from '@/providers/ThemeProvider'
 import { ToastProvider } from '@/providers/ToastProvider'
@@ -26,6 +28,7 @@ export default async function RootLayout({
 	return (
 		<html lang={locale} suppressHydrationWarning>
 			<body className={GeistSans.variable}>
+				<ColorSwitcher />
 				<ApolloClientProvider>
 					<NextIntlClientProvider messages={messages}>
 						<ThemeProvider
