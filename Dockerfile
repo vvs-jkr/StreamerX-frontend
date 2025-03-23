@@ -2,22 +2,18 @@ FROM node:20.17.0-alpine AS base
 
 RUN apk add --no-cache curl bash
 
-RUN curl -fsSL https://bun.sh/install | bash
-
-ENV PATH="/root/.bun/bin:$PATH"
-
 WORKDIR /app
 
-COPY package.json bun.lockb ./
+COPY package.json yarn.lock ./
 
-RUN bun install
+RUN yarn install --frozen-lockfile
 
 COPY . .
 
-RUN bun graphql-codegen --config graphql.config.ts
+RUN yarn graphql-codegen --config graphql.config.ts
 
-RUN bun run build
+RUN yarn run build
 
 EXPOSE 3000
 
-CMD ["bun", "run", "start"]
+CMD ["yarn", "run", "start"]
