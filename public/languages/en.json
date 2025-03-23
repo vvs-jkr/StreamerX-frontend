@@ -292,8 +292,8 @@
 						"titlePlaceholder": "Youtube",
 						"titleDescription": "Link text",
 						"urlLabel": "Link URL",
-						"urlPlaceholder": "https://github.com/TeaCoder52",
-						"urlDescription": "Where does this link lead? Please enter the full URL, e.g., https://github.com/TeaCoder52",
+						"urlPlaceholder": "https://github.com/vvs-jkr",
+						"urlDescription": "Where does this link lead? Please enter the full URL, e.g., https://github.com/vvs-jkr",
 						"submitButton": "Add",
 						"successMessage": "Social media link successfully added",
 						"errorMessage": "Error adding social media link"

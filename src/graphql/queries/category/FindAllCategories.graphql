@@ -1,0 +1,9 @@
+query FindAllCategories {
+	findAllCategories {
+		id
+		updatedAt
+		title
+		slug
+		thumbnailUrl
+	}
+}
