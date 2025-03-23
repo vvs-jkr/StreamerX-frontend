@@ -3,7 +3,7 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Trash } from 'lucide-react'
 import { useTranslations } from 'next-intl'
-import { type ChangeEvent, useEffect, useRef, useState } from 'react'
+import { type ChangeEvent, useRef } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 
@@ -31,32 +31,18 @@ export function ChangeAvatarForm() {
 
 	const { user, isLoadingProfile, refetch } = useCurrent()
 
-	useEffect(() => {
-		const fetchData = async () => {
-			const result = await refetch()
-		}
-		fetchData()
-	}, [refetch])
-
 	const inputRef = useRef<HTMLInputElement>(null)
 
 	const form = useForm<TypeUploadFileSchema>({
 		resolver: zodResolver(uploadFileSchema),
-		defaultValues: {
-			file: user?.avatar || ''
+		values: {
+			file: user?.avatar!
 		}
 	})
 
-	useEffect(() => {
-		if (user?.avatar) {
-			form.setValue('file', user.avatar)
-		}
-	}, [user?.avatar, form])
-
 	const [update, { loading: isLoadingUpdate }] =
 		useChangeProfileAvatarMutation({
-			onCompleted(data) {
-				form.setValue('file', data.changeProfileAvatar)
+			onCompleted() {
 				refetch()
 				toast.success(t('successUpdateMessage'))
 			},
@@ -68,7 +54,6 @@ export function ChangeAvatarForm() {
 	const [remove, { loading: isLoadingRemove }] =
 		useRemoveProfileAvatarMutation({
 			onCompleted() {
-				form.setValue('file', '')
 				refetch()
 				toast.success(t('successRemoveMessage'))
 			},

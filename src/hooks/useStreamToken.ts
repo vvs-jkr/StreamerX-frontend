@@ -5,9 +5,8 @@ import { v4 as uuid4 } from 'uuid'
 
 import { useGenerateStreamTokenMutation } from '@/graphql/generated/output'
 
-import { useAuth } from 'c:/Users/joker/Downloads/full-stack-kopiya-twitch/full-stack-kopiya-twitch/frontend/src/hooks/useAuth'
-
 import { useCurrent } from './useCurrent'
+import { useAuth } from './useAuth'
 
 export function useStreamToken(channelId: string) {
 	const [token, setToken] = useState('')

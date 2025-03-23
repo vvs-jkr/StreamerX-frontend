@@ -43,7 +43,7 @@ export function ChangeNotificationsSettingsForm() {
 
 				if (data.changeNotificationsSettings.telegramAuthToken) {
 					window.open(
-						`https://t.me/streamerx_bot?start=${data.changeNotificationsSettings.telegramAuthToken}`,
+						`https://t.me/streeamerx_bot?start=${data.changeNotificationsSettings.telegramAuthToken}`,
 						'_blank'
 					)
 				}
