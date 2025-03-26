@@ -1,14 +1,16 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useTranslations } from 'next-intl'
+import { useRouter } from 'next/navigation'
 import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
+import { toast } from 'sonner'
 import { z } from 'zod'
 
 import { Input } from '@/components/ui/common/Input'
+
 import { useCreateUserMutation } from '@/graphql/generated/output'
+
 import { useAuth } from '@/hooks/useAuth'
-import { useRouter } from 'next/navigation'
-import { toast } from 'sonner'
 
 const createAccountSchema = z.object({
 	username: z
@@ -23,11 +25,12 @@ type CreateAccountFormData = z.infer<typeof createAccountSchema>
 const CreateAccountForm: React.FC = () => {
 	const t = useTranslations()
 	const router = useRouter()
-	const { login } = useAuth()
+	const { auth } = useAuth()
 	const [isLoading, setIsLoading] = useState(false)
 
 	const [createUser] = useCreateUserMutation({
 		onCompleted() {
+			auth()
 			toast.success(t('successMessage'))
 			router.push('/dashboard/settings')
 		},
