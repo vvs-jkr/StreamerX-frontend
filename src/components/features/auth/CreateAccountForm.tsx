@@ -2,7 +2,13 @@ import { useTranslations } from 'next-intl'
 import React from 'react'
 import { useForm } from 'react-hook-form'
 
-import { Input } from '@/components/ui/input'
+import { Input } from '@/components/ui/common/Input'
+
+interface CreateAccountFormData {
+	username: string
+	email: string
+	password: string
+}
 
 const CreateAccountForm: React.FC = () => {
 	const t = useTranslations()
@@ -10,7 +16,7 @@ const CreateAccountForm: React.FC = () => {
 		register,
 		handleSubmit,
 		formState: { errors }
-	} = useForm()
+	} = useForm<CreateAccountFormData>()
 
 	return (
 		<form>
@@ -22,7 +28,7 @@ const CreateAccountForm: React.FC = () => {
 			/>
 			{errors.username && (
 				<p className='mt-1 text-sm text-destructive'>
-					{errors.username.message}
+					{errors.username.message?.toString()}
 				</p>
 			)}
 			<Input
@@ -33,7 +39,7 @@ const CreateAccountForm: React.FC = () => {
 			/>
 			{errors.email && (
 				<p className='mt-1 text-sm text-destructive'>
-					{errors.email.message}
+					{errors.email.message?.toString()}
 				</p>
 			)}
 			<Input
@@ -44,7 +50,7 @@ const CreateAccountForm: React.FC = () => {
 			/>
 			{errors.password && (
 				<p className='mt-1 text-sm text-destructive'>
-					{errors.password.message}
+					{errors.password.message?.toString()}
 				</p>
 			)}
 		</form>

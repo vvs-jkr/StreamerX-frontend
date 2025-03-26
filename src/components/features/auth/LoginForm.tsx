@@ -2,7 +2,12 @@ import { useTranslations } from 'next-intl'
 import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
 
-import { Input } from '@/components/ui/input'
+import { Input } from '@/components/ui/common/Input'
+
+interface LoginFormData {
+	login: string
+	password: string
+}
 
 const LoginForm: React.FC = () => {
 	const t = useTranslations()
@@ -10,10 +15,10 @@ const LoginForm: React.FC = () => {
 		register,
 		handleSubmit,
 		formState: { errors }
-	} = useForm()
+	} = useForm<LoginFormData>()
 	const [isLoading, setIsLoading] = useState(false)
 
-	const onSubmit = async (data: any) => {
+	const onSubmit = async (data: LoginFormData) => {
 		setIsLoading(true)
 		// Handle form submission
 		setIsLoading(false)
@@ -29,7 +34,7 @@ const LoginForm: React.FC = () => {
 			/>
 			{errors.login && (
 				<p className='mt-1 text-sm text-destructive'>
-					{errors.login.message}
+					{errors.login.message?.toString()}
 				</p>
 			)}
 			<Input
@@ -40,7 +45,7 @@ const LoginForm: React.FC = () => {
 			/>
 			{errors.password && (
 				<p className='mt-1 text-sm text-destructive'>
-					{errors.password.message}
+					{errors.password.message?.toString()}
 				</p>
 			)}
 			{/* ... rest of the component ... */}
