@@ -1,12 +1,16 @@
 import React from 'react'
-import { useForm } from 'react'
+import { useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import { Input } from '@/components/ui/input'
 
 const CreateAccountForm: React.FC = () => {
 	const { t } = useTranslation()
-	const { register, handleSubmit, errors } = useForm()
+	const {
+		register,
+		handleSubmit,
+		formState: { errors }
+	} = useForm()
 
 	return (
 		<form>
