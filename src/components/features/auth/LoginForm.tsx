@@ -36,7 +36,7 @@ const LoginForm: React.FC = () => {
 				type='text'
 				placeholder={t('login.placeholder')}
 				{...register('login')}
-				data-error={!!errors.login}
+				data-state={errors.login ? 'error' : undefined}
 			/>
 			{errors.login && (
 				<p className='mt-1 text-sm text-destructive'>
@@ -47,7 +47,7 @@ const LoginForm: React.FC = () => {
 				type='password'
 				placeholder={t('password.placeholder')}
 				{...register('password')}
-				data-error={!!errors.password}
+				data-state={errors.password ? 'error' : undefined}
 			/>
 			{errors.password && (
 				<p className='mt-1 text-sm text-destructive'>

@@ -32,7 +32,7 @@ const CreateAccountForm: React.FC = () => {
 				type='text'
 				placeholder={t('username.placeholder')}
 				{...register('username')}
-				data-error={!!errors.username}
+				data-state={errors.username ? 'error' : undefined}
 			/>
 			{errors.username && (
 				<p className='mt-1 text-sm text-destructive'>
@@ -43,7 +43,7 @@ const CreateAccountForm: React.FC = () => {
 				type='email'
 				placeholder={t('email.placeholder')}
 				{...register('email')}
-				data-error={!!errors.email}
+				data-state={errors.email ? 'error' : undefined}
 			/>
 			{errors.email && (
 				<p className='mt-1 text-sm text-destructive'>
@@ -54,7 +54,7 @@ const CreateAccountForm: React.FC = () => {
 				type='password'
 				placeholder={t('password.placeholder')}
 				{...register('password')}
-				data-error={!!errors.password}
+				data-state={errors.password ? 'error' : undefined}
 			/>
 			{errors.password && (
 				<p className='mt-1 text-sm text-destructive'>

@@ -1,43 +1,39 @@
-import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 
-export function middleware(request: NextRequest) {
-	const session = request.cookies.get('session')
-	const isAuth = !!session
+export default function middleware(request: NextRequest) {
+	const { url, cookies, nextUrl } = request
 
-	const isLoginRoute = request.nextUrl.pathname.startsWith('/login')
-	const isRegisterRoute = request.nextUrl.pathname.startsWith('/register')
-	const isHomeRoute = request.nextUrl.pathname === '/'
+	const session = cookies.get('session')?.value
+
+	const isAuthRoute = nextUrl.pathname.startsWith('/account')
+	const isDeactivateRoute = nextUrl.pathname === '/account/deactivate'
+	const isDashboardRoute = nextUrl.pathname.startsWith('/dashboard')
+	const isProfileRoute = nextUrl.pathname.startsWith('/profile')
+	const isStreamRoute = nextUrl.pathname.startsWith('/stream')
+	const isSettingsRoute = nextUrl.pathname.startsWith('/settings')
+	const isHomeRoute = nextUrl.pathname === '/'
+	const isLoginRoute = nextUrl.pathname === '/account/login'
+	const isRegisterRoute = nextUrl.pathname === '/account/create'
+
 	const isProtectedRoute =
-		request.nextUrl.pathname.startsWith('/account') ||
-		request.nextUrl.pathname.startsWith('/dashboard') ||
-		request.nextUrl.pathname.startsWith('/profile') ||
-		request.nextUrl.pathname.startsWith('/stream') ||
-		request.nextUrl.pathname.startsWith('/settings')
+		isDashboardRoute ||
+		isProfileRoute ||
+		isStreamRoute ||
+		isSettingsRoute ||
+		isDeactivateRoute ||
+		(!isHomeRoute && !isAuthRoute)
 
-	if (!isAuth) {
-		if (isProtectedRoute) {
-			return NextResponse.redirect(new URL('/login', request.url))
-		}
-	} else {
-		if (isLoginRoute || isRegisterRoute) {
-			return NextResponse.redirect(
-				new URL('/dashboard/settings', request.url)
-			)
-		}
+	if (!session && isProtectedRoute) {
+		return NextResponse.redirect(new URL('/account/login', url))
+	}
+
+	if (session && (isLoginRoute || isRegisterRoute)) {
+		return NextResponse.redirect(new URL('/dashboard/settings', url))
 	}
 
 	return NextResponse.next()
 }
 
 export const config = {
-	matcher: [
-		'/account/:path*',
-		'/dashboard/:path*',
-		'/profile/:path*',
-		'/stream/:path*',
-		'/settings/:path*',
-		'/login',
-		'/register'
-	]
+	matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)']
 }
