@@ -12,6 +12,8 @@ export default function middleware(request: NextRequest) {
 	const isStreamRoute = nextUrl.pathname.startsWith('/stream')
 	const isSettingsRoute = nextUrl.pathname.startsWith('/settings')
 	const isHomeRoute = nextUrl.pathname === '/'
+	const isLoginRoute = nextUrl.pathname === '/account/login'
+	const isRegisterRoute = nextUrl.pathname === '/account/create'
 
 	const isProtectedRoute =
 		isDashboardRoute ||
@@ -25,7 +27,7 @@ export default function middleware(request: NextRequest) {
 		return NextResponse.redirect(new URL('/account/login', url))
 	}
 
-	if (session && isAuthRoute && !isDeactivateRoute) {
+	if (session && (isLoginRoute || isRegisterRoute)) {
 		return NextResponse.redirect(new URL('/dashboard/settings', url))
 	}
 
