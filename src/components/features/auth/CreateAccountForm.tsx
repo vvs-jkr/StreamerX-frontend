@@ -1,14 +1,20 @@
+import { zodResolver } from '@hookform/resolvers/zod'
 import { useTranslations } from 'next-intl'
 import React from 'react'
 import { useForm } from 'react-hook-form'
+import { z } from 'zod'
 
 import { Input } from '@/components/ui/common/Input'
 
-interface CreateAccountFormData {
-	username: string
-	email: string
-	password: string
-}
+const createAccountSchema = z.object({
+	username: z
+		.string()
+		.min(3, 'Имя пользователя должно содержать минимум 3 символа'),
+	email: z.string().email('Введите корректный email'),
+	password: z.string().min(6, 'Пароль должен содержать минимум 6 символов')
+})
+
+type CreateAccountFormData = z.infer<typeof createAccountSchema>
 
 const CreateAccountForm: React.FC = () => {
 	const t = useTranslations()
@@ -16,10 +22,12 @@ const CreateAccountForm: React.FC = () => {
 		register,
 		handleSubmit,
 		formState: { errors }
-	} = useForm<CreateAccountFormData>()
+	} = useForm<CreateAccountFormData>({
+		resolver: zodResolver(createAccountSchema)
+	})
 
 	return (
-		<form>
+		<form onSubmit={handleSubmit(data => console.log(data))}>
 			<Input
 				type='text'
 				placeholder={t('username.placeholder')}
@@ -28,7 +36,7 @@ const CreateAccountForm: React.FC = () => {
 			/>
 			{errors.username && (
 				<p className='mt-1 text-sm text-destructive'>
-					{errors.username.message?.toString()}
+					{errors.username.message}
 				</p>
 			)}
 			<Input
@@ -39,7 +47,7 @@ const CreateAccountForm: React.FC = () => {
 			/>
 			{errors.email && (
 				<p className='mt-1 text-sm text-destructive'>
-					{errors.email.message?.toString()}
+					{errors.email.message}
 				</p>
 			)}
 			<Input
@@ -50,7 +58,7 @@ const CreateAccountForm: React.FC = () => {
 			/>
 			{errors.password && (
 				<p className='mt-1 text-sm text-destructive'>
-					{errors.password.message?.toString()}
+					{errors.password.message}
 				</p>
 			)}
 		</form>
