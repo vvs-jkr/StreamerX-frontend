@@ -52,9 +52,11 @@ const CreateAccountForm: React.FC = () => {
 			setIsLoading(true)
 			await createUser({
 				variables: {
-					username: data.username,
-					email: data.email,
-					password: data.password
+					data: {
+						username: data.username,
+						email: data.email,
+						password: data.password
+					}
 				}
 			})
 		} catch (error) {
