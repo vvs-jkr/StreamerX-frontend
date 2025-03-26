@@ -19,6 +19,8 @@ import { ToastProvider } from '@/providers/ToastProvider'
 import '@/styles/globals.css'
 import '@/styles/themes.css'
 
+import '../i18n/config'
+
 export const metadata: Metadata = {
 	title: {
 		absolute: SITE_NAME,

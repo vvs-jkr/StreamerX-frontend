@@ -1,11 +1,11 @@
+import { useTranslations } from 'next-intl'
 import React from 'react'
 import { useForm } from 'react-hook-form'
-import { useTranslation } from 'react-i18next'
 
 import { Input } from '@/components/ui/input'
 
 const CreateAccountForm: React.FC = () => {
-	const { t } = useTranslation()
+	const t = useTranslations()
 	const {
 		register,
 		handleSubmit,
