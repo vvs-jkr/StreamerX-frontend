@@ -34,7 +34,7 @@ export function ProfileMenu() {
 			localStorage.clear()
 			exit()
 			toast.success(t('successMessage'))
-			router.push('/account/login')
+			router.push('/')
 		},
 		onError() {
 			toast.error(t('errorMessage'))

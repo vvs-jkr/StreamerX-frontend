@@ -37,7 +37,7 @@ export function ChannelSponsors({ channel }: ChannelSponsorsProps) {
 					{t('heading')} {channel.displayName}
 				</CardTitle>
 			</CardHeader>
-			<CardContent className='grid grid-cols-12 px-4'>
+			<CardContent className='flex flex-wrap gap-4 px-4'>
 				{sponsors.map((sponsor, index) => (
 					<Link key={index} href={`/${sponsor.user.username}`}>
 						<ChannelAvatar channel={sponsor.user} size='lg' />
