@@ -31,6 +31,7 @@ export function ProfileMenu() {
 
 	const [logout] = useLogoutUserMutation({
 		onCompleted() {
+			localStorage.clear()
 			exit()
 			toast.success(t('successMessage'))
 			router.push('/account/login')

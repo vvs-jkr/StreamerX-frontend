@@ -15,7 +15,8 @@ import {
 	FormDescription,
 	FormField,
 	FormItem,
-	FormLabel
+	FormLabel,
+	FormMessage
 } from '@/components/ui/common/Form'
 import { Input } from '@/components/ui/common/Input'
 import {
@@ -118,12 +119,18 @@ export function LoginForm() {
 											<Input
 												placeholder='johndoe'
 												disabled={isLoadingLogin}
+												data-state={
+													form.formState.errors.login
+														? 'error'
+														: undefined
+												}
 												{...field}
 											/>
 										</FormControl>
 										<FormDescription>
 											{t('loginDescription')}
 										</FormDescription>
+										<FormMessage />
 									</FormItem>
 								)}
 							/>
@@ -148,12 +155,19 @@ export function LoginForm() {
 												placeholder='********'
 												type='password'
 												disabled={isLoadingLogin}
+												data-state={
+													form.formState.errors
+														.password
+														? 'error'
+														: undefined
+												}
 												{...field}
 											/>
 										</FormControl>
 										<FormDescription>
 											{t('passwordDescription')}
 										</FormDescription>
+										<FormMessage />
 									</FormItem>
 								)}
 							/>

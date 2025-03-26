@@ -8,12 +8,20 @@ export default function middleware(request: NextRequest) {
 	const isAuthRoute = nextUrl.pathname.startsWith('/account')
 	const isDeactivateRoute = nextUrl.pathname === '/account/deactivate'
 	const isDashboardRoute = nextUrl.pathname.startsWith('/dashboard')
+	const isProfileRoute = nextUrl.pathname.startsWith('/profile')
+	const isStreamRoute = nextUrl.pathname.startsWith('/stream')
+	const isSettingsRoute = nextUrl.pathname.startsWith('/settings')
+	const isHomeRoute = nextUrl.pathname === '/'
 
-	if (!session && isDashboardRoute) {
-		return NextResponse.redirect(new URL('/account/login', url))
-	}
+	const isProtectedRoute =
+		isDashboardRoute ||
+		isProfileRoute ||
+		isStreamRoute ||
+		isSettingsRoute ||
+		isDeactivateRoute ||
+		(!isHomeRoute && !isAuthRoute)
 
-	if (!session && isDeactivateRoute) {
+	if (!session && isProtectedRoute) {
 		return NextResponse.redirect(new URL('/account/login', url))
 	}
 
@@ -25,5 +33,5 @@ export default function middleware(request: NextRequest) {
 }
 
 export const config = {
-	matcher: ['/account/:path*', '/dashboard/:path*']
+	matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)']
 }

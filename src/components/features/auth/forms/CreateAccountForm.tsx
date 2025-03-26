@@ -19,7 +19,8 @@ import {
 	FormDescription,
 	FormField,
 	FormItem,
-	FormLabel
+	FormLabel,
+	FormMessage
 } from '@/components/ui/common/Form'
 import { Input } from '@/components/ui/common/Input'
 
@@ -91,12 +92,18 @@ export function CreateAccountForm() {
 										<Input
 											placeholder='johndoe'
 											disabled={isLoadingCreate}
+											data-state={
+												form.formState.errors.username
+													? 'error'
+													: undefined
+											}
 											{...field}
 										/>
 									</FormControl>
 									<FormDescription>
 										{t('usernameDescription')}
 									</FormDescription>
+									<FormMessage />
 								</FormItem>
 							)}
 						/>
@@ -110,12 +117,18 @@ export function CreateAccountForm() {
 										<Input
 											placeholder='john.doe@example.com'
 											disabled={isLoadingCreate}
+											data-state={
+												form.formState.errors.email
+													? 'error'
+													: undefined
+											}
 											{...field}
 										/>
 									</FormControl>
 									<FormDescription>
 										{t('emailDescription')}
 									</FormDescription>
+									<FormMessage />
 								</FormItem>
 							)}
 						/>
@@ -130,12 +143,18 @@ export function CreateAccountForm() {
 											placeholder='********'
 											type='password'
 											disabled={isLoadingCreate}
+											data-state={
+												form.formState.errors.password
+													? 'error'
+													: undefined
+											}
 											{...field}
 										/>
 									</FormControl>
 									<FormDescription>
 										{t('passwordDescription')}
 									</FormDescription>
+									<FormMessage />
 								</FormItem>
 							)}
 						/>
