@@ -2,9 +2,12 @@ import { useEffect } from 'react'
 
 import { authStore } from '@/store/auth/auth.store'
 
+import { useCurrent } from './useCurrent'
+
 export function useAuth() {
 	const isAuthenticated = authStore(state => state.isAuthenticated)
 	const setIsAuthenticated = authStore(state => state.setIsAuthenticated)
+	const { user, refetch } = useCurrent()
 
 	useEffect(() => {
 		const checkSessionCookie = () => {
@@ -21,6 +24,9 @@ export function useAuth() {
 
 			if (isAuthenticated !== hasValidSession) {
 				setIsAuthenticated(hasValidSession)
+				if (hasValidSession) {
+					refetch()
+				}
 			}
 		}
 
@@ -32,9 +38,12 @@ export function useAuth() {
 			clearInterval(interval)
 			window.removeEventListener('storage', checkSessionCookie)
 		}
-	}, [isAuthenticated, setIsAuthenticated])
+	}, [isAuthenticated, setIsAuthenticated, refetch])
 
-	const auth = () => setIsAuthenticated(true)
+	const auth = () => {
+		setIsAuthenticated(true)
+		refetch()
+	}
 
 	const exit = () => {
 		setIsAuthenticated(false)
@@ -50,6 +59,7 @@ export function useAuth() {
 	return {
 		isAuthenticated,
 		auth,
-		exit
+		exit,
+		user
 	}
 }

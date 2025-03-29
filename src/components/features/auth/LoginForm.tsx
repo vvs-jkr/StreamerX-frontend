@@ -1,60 +1,107 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useTranslations } from 'next-intl'
-import React, { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import React from 'react'
 import { useForm } from 'react-hook-form'
+import { toast } from 'sonner'
 import { z } from 'zod'
 
+import { Button } from '@/components/ui/common/Button'
 import { Input } from '@/components/ui/common/Input'
 
+import { useLoginUserMutation } from '@/graphql/generated/output'
+
+import { useAuth } from '@/hooks/useAuth'
+
 const loginSchema = z.object({
-	login: z.string().min(3, 'Логин должен содержать минимум 3 символа'),
-	password: z.string().min(6, 'Пароль должен содержать минимум 6 символов')
+	login: z
+		.string()
+		.min(3, 'Логин должен содержать минимум 3 символа')
+		.max(32, 'Логин не может быть длиннее 32 символов')
+		.regex(
+			/^[a-zA-Z0-9_-]+$/,
+			'Логин может содержать только буквы, цифры, - и _'
+		)
+		.trim(),
+	password: z
+		.string()
+		.min(6, 'Пароль должен содержать минимум 6 символов')
+		.max(64, 'Пароль не может быть длиннее 64 символов')
+		.regex(
+			/^[a-zA-Z0-9!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]+$/,
+			'Пароль содержит недопустимые символы'
+		)
 })
 
 type LoginFormData = z.infer<typeof loginSchema>
 
 const LoginForm: React.FC = () => {
-	const t = useTranslations()
+	const t = useTranslations('auth')
+	const router = useRouter()
+	const { auth } = useAuth()
 	const {
 		register,
 		handleSubmit,
-		formState: { errors }
+		formState: { errors, isSubmitting }
 	} = useForm<LoginFormData>({
 		resolver: zodResolver(loginSchema)
 	})
-	const [isLoading, setIsLoading] = useState(false)
+
+	const [login, { loading }] = useLoginUserMutation({
+		onCompleted() {
+			auth()
+			toast.success(t('login.success'))
+			router.replace('/dashboard/settings')
+		},
+		onError(error) {
+			toast.error(error.message)
+		}
+	})
 
 	const onSubmit = async (data: LoginFormData) => {
-		setIsLoading(true)
-		// Handle form submission
-		setIsLoading(false)
+		await login({
+			variables: {
+				input: {
+					login: data.login.trim(),
+					password: data.password
+				}
+			}
+		})
 	}
 
 	return (
-		<form onSubmit={handleSubmit(onSubmit)}>
-			<Input
-				type='text'
-				placeholder={t('login.placeholder')}
-				{...register('login')}
-				data-state={errors.login ? 'error' : undefined}
-			/>
-			{errors.login && (
-				<p className='mt-1 text-sm text-destructive'>
-					{errors.login.message}
-				</p>
-			)}
-			<Input
-				type='password'
-				placeholder={t('password.placeholder')}
-				{...register('password')}
-				data-state={errors.password ? 'error' : undefined}
-			/>
-			{errors.password && (
-				<p className='mt-1 text-sm text-destructive'>
-					{errors.password.message}
-				</p>
-			)}
-			{/* ... rest of the component ... */}
+		<form onSubmit={handleSubmit(onSubmit)} className='flex flex-col gap-4'>
+			<div className='space-y-2'>
+				<Input
+					type='text'
+					placeholder={t('login.placeholder')}
+					{...register('login')}
+					error={errors.login?.message}
+					disabled={isSubmitting || loading}
+				/>
+				{errors.login && (
+					<p className='text-sm text-destructive'>
+						{errors.login.message}
+					</p>
+				)}
+			</div>
+			<div className='space-y-2'>
+				<Input
+					type='password'
+					placeholder={t('password.placeholder')}
+					{...register('password')}
+					error={errors.password?.message}
+					disabled={isSubmitting || loading}
+				/>
+				{errors.password && (
+					<p className='text-sm text-destructive'>
+						{errors.password.message}
+					</p>
+				)}
+			</div>
+			<Button type='submit' disabled={isSubmitting || loading}>
+				{loading ? t('login.loading') : t('login.submit')}
+			</Button>
 		</form>
 	)
 }
