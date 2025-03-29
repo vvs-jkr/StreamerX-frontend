@@ -34,23 +34,29 @@ export function AuthSessionProvider({
 	const redirectStrategies: RedirectStrategy[] = [
 		{
 			shouldRedirect: () =>
-				!isAuthenticated && isProtectedRoute && !isLoadingProfile,
+				Boolean(
+					!isAuthenticated && isProtectedRoute && !isLoadingProfile
+				),
 			getRedirectPath: () => '/account/login'
 		},
 		{
 			shouldRedirect: () =>
-				isAuthenticated &&
-				!user &&
-				isProtectedRoute &&
-				!isLoadingProfile,
+				Boolean(
+					isAuthenticated &&
+						!user &&
+						isProtectedRoute &&
+						!isLoadingProfile
+				),
 			getRedirectPath: () => '/account/login'
 		},
 		{
 			shouldRedirect: () =>
-				isAuthenticated &&
-				user &&
-				(isLoginRoute || isRegisterRoute) &&
-				!isLoadingProfile,
+				Boolean(
+					isAuthenticated &&
+						user &&
+						(isLoginRoute || isRegisterRoute) &&
+						!isLoadingProfile
+				),
 			getRedirectPath: () => '/dashboard'
 		}
 	]
