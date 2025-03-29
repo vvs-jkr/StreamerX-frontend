@@ -1,8 +1,10 @@
+import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 
 import { authStore } from '@/store/auth/auth.store'
 
 export function useAuth() {
+	const router = useRouter()
 	const isAuthenticated = authStore(state => state.isAuthenticated)
 	const setIsAuthenticated = authStore(state => state.setIsAuthenticated)
 
@@ -21,6 +23,9 @@ export function useAuth() {
 
 			if (isAuthenticated !== hasValidSession) {
 				setIsAuthenticated(hasValidSession)
+				if (!hasValidSession && isAuthenticated) {
+					router.replace('/')
+				}
 			}
 		}
 
@@ -32,7 +37,7 @@ export function useAuth() {
 			clearInterval(interval)
 			window.removeEventListener('storage', checkSessionCookie)
 		}
-	}, [isAuthenticated, setIsAuthenticated])
+	}, [isAuthenticated, setIsAuthenticated, router])
 
 	const auth = () => {
 		setIsAuthenticated(true)
@@ -40,13 +45,12 @@ export function useAuth() {
 
 	const exit = () => {
 		setIsAuthenticated(false)
-		localStorage.clear()
-		sessionStorage.clear()
 		const cookies = document.cookie.split(';')
 		cookies.forEach(cookie => {
 			const [name] = cookie.split('=')
 			document.cookie = `${name.trim()}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=${window.location.hostname}`
 		})
+		router.replace('/')
 	}
 
 	return {
