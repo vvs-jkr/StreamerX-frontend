@@ -53,7 +53,7 @@ export function LoginForm() {
 	const [login, { loading: isLoadingLogin }] = useLoginUserMutation({
 		onCompleted(data) {
 			if (!data.loginUser) {
-				setServerError('Неверные учетные данные')
+				setServerError(t('errorMessage'))
 				return
 			}
 
@@ -65,7 +65,8 @@ export function LoginForm() {
 				toast.success(t('successMessage'))
 				router.push('/dashboard/settings')
 			} else {
-				setServerError('Ошибка авторизации')
+				setServerError(t('errorMessage'))
+				toast.error(t('errorMessage'))
 			}
 		},
 		onError(error) {
@@ -81,7 +82,22 @@ export function LoginForm() {
 	function onSubmit(data: TypeLoginSchema) {
 		setServerError(null)
 		form.clearErrors()
-		login({ variables: { data } })
+
+		if (isShowTwoFactor && (!data.pin || data.pin.length < 6)) {
+			form.setError('pin', { message: t('pinError') })
+			toast.error(t('pinError'))
+			return
+		}
+
+		login({
+			variables: {
+				data: {
+					login: data.login,
+					password: data.password,
+					pin: isShowTwoFactor ? data.pin : ''
+				}
+			}
+		})
 	}
 
 	return (
@@ -196,6 +212,11 @@ export function LoginForm() {
 					>
 						{t('submitButton')}
 					</Button>
+					{serverError && (
+						<div className='mt-2 text-center text-sm text-destructive'>
+							{serverError}
+						</div>
+					)}
 				</form>
 			</Form>
 		</AuthWrapper>
