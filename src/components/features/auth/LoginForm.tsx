@@ -42,9 +42,10 @@ const LoginForm: React.FC = () => {
 	const {
 		register,
 		handleSubmit,
-		formState: { errors, isSubmitting }
+		formState: { errors, isSubmitting, isValid }
 	} = useForm<LoginFormData>({
-		resolver: zodResolver(loginSchema)
+		resolver: zodResolver(loginSchema),
+		mode: 'onChange'
 	})
 
 	const [login, { loading }] = useLoginUserMutation({
@@ -80,7 +81,7 @@ const LoginForm: React.FC = () => {
 					disabled={isSubmitting || loading}
 				/>
 				{errors.login && (
-					<p className='text-sm text-destructive'>
+					<p className='text-sm text-red-500'>
 						{errors.login.message}
 					</p>
 				)}
@@ -94,12 +95,16 @@ const LoginForm: React.FC = () => {
 					disabled={isSubmitting || loading}
 				/>
 				{errors.password && (
-					<p className='text-sm text-destructive'>
+					<p className='text-sm text-red-500'>
 						{errors.password.message}
 					</p>
 				)}
 			</div>
-			<Button type='submit' disabled={isSubmitting || loading}>
+			<Button
+				type='submit'
+				disabled={isSubmitting || loading || !isValid}
+				className='w-full'
+			>
 				{loading ? t('login.loading') : t('login.submit')}
 			</Button>
 		</form>
