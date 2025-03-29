@@ -54,47 +54,56 @@ export function LoginForm() {
 		onCompleted(data) {
 			if (!data.loginUser) {
 				setServerError(t('errorMessage'))
+				form.setError('login', { message: t('errorMessage') })
+				form.setError('password', { message: t('errorMessage') })
 				return
 			}
 
 			if (data.loginUser.message) {
 				setIsShowTwoFactor(true)
 				setServerError(null)
+				form.clearErrors()
 			} else if (data.loginUser.user) {
 				auth()
 				toast.success(t('successMessage'))
 				router.push('/dashboard/settings')
 			} else {
 				setServerError(t('errorMessage'))
+				form.setError('login', { message: t('errorMessage') })
+				form.setError('password', { message: t('errorMessage') })
 				toast.error(t('errorMessage'))
 			}
 		},
 		onError(error) {
-			setServerError(error.message)
-			form.setError('login', { message: error.message })
-			form.setError('password', { message: error.message })
-			toast.error(t('errorMessage'))
+			const message = error.message.includes('pin must be')
+				? t('pinError')
+				: t('errorMessage')
+
+			setServerError(message)
+
+			if (isShowTwoFactor) {
+				form.setError('pin', { message })
+			} else {
+				form.setError('login', { message })
+				form.setError('password', { message })
+			}
+
+			toast.error(message)
 		}
 	})
 
-	const { isValid, errors, touchedFields } = form.formState
+	const { isValid, errors } = form.formState
 
 	function onSubmit(data: TypeLoginSchema) {
 		setServerError(null)
 		form.clearErrors()
-
-		if (isShowTwoFactor && (!data.pin || data.pin.length < 6)) {
-			form.setError('pin', { message: t('pinError') })
-			toast.error(t('pinError'))
-			return
-		}
 
 		login({
 			variables: {
 				data: {
 					login: data.login,
 					password: data.password,
-					pin: isShowTwoFactor ? data.pin : ''
+					pin: ''
 				}
 			}
 		})
@@ -119,7 +128,15 @@ export function LoginForm() {
 								<FormItem>
 									<FormLabel>{t('pinLabel')}</FormLabel>
 									<FormControl>
-										<InputOTP maxLength={6} {...field}>
+										<InputOTP
+											maxLength={6}
+											{...field}
+											className={
+												errors.pin
+													? 'border-destructive'
+													: ''
+											}
+										>
 											<InputOTPGroup>
 												<InputOTPSlot index={0} />
 												<InputOTPSlot index={1} />
@@ -149,12 +166,10 @@ export function LoginForm() {
 											<Input
 												placeholder='johndoe'
 												disabled={isLoadingLogin}
-												data-state={
-													(touchedFields.login &&
-														errors.login) ||
-													serverError
-														? 'error'
-														: undefined
+												className={
+													errors.login
+														? 'border-destructive'
+														: ''
 												}
 												{...field}
 											/>
@@ -187,12 +202,10 @@ export function LoginForm() {
 												placeholder='********'
 												type='password'
 												disabled={isLoadingLogin}
-												data-state={
-													(touchedFields.password &&
-														errors.password) ||
-													serverError
-														? 'error'
-														: undefined
+												className={
+													errors.password
+														? 'border-destructive'
+														: ''
 												}
 												{...field}
 											/>
