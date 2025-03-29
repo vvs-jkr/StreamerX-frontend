@@ -32,9 +32,18 @@ export function ProfileMenu() {
 	const [logout] = useLogoutUserMutation({
 		onCompleted() {
 			localStorage.clear()
+			sessionStorage.clear()
+			document.cookie.split(';').forEach(function (c) {
+				document.cookie = c
+					.replace(/^ +/, '')
+					.replace(
+						/=.*/,
+						'=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/'
+					)
+			})
 			exit()
 			toast.success(t('successMessage'))
-			router.push('/')
+			window.location.href = '/' // Принудительная перезагрузка страницы и переход на главную
 		},
 		onError() {
 			toast.error(t('errorMessage'))
