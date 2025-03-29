@@ -15,9 +15,9 @@ for (const dep in dependencies) {
       const installedVersion = installedPackage.version;
       console.log(`${dep}: Установлен (версия: ${installedVersion})`);
     } else {
-      console.log(`${dep}: НЕ УСТАНОВЛЕН:`);
+      console.log(`${dep}: НЕ УСТАНОВЛЕН`);
     }
   } catch (e) {
-    console.log(`${dep}: НЕ УСТАНОВЛЕН: (ошибка: ${e.message})`);
+    console.log(`${dep}: НЕ УСТАНОВЛЕН (ошибка: ${e.message})`);
   }
 }
