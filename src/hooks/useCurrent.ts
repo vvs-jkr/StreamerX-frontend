@@ -5,14 +5,15 @@ import {
 	useFindProfileQuery
 } from '@/graphql/generated/output'
 
-import { useAuth } from './useAuth'
+import { authStore } from '@/store/auth/auth.store'
 
 export function useCurrent() {
-	const { isAuthenticated, exit } = useAuth()
+	const isAuthenticated = authStore(state => state.isAuthenticated)
+	const setIsAuthenticated = authStore(state => state.setIsAuthenticated)
 
 	const { data, loading, refetch, error } = useFindProfileQuery({
 		skip: !isAuthenticated,
-    fetchPolicy: 'network-only'
+		fetchPolicy: 'network-only'
 	})
 	const [clear] = useClearSessionCookieMutation()
 
@@ -21,9 +22,16 @@ export function useCurrent() {
 			if (isAuthenticated) {
 				clear()
 			}
-			exit()
+			setIsAuthenticated(false)
+			localStorage.clear()
+			sessionStorage.clear()
+			const cookies = document.cookie.split(';')
+			cookies.forEach(cookie => {
+				const [name] = cookie.split('=')
+				document.cookie = `${name.trim()}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=${window.location.hostname}`
+			})
 		}
-	}, [isAuthenticated, exit, clear])
+	}, [error, isAuthenticated, clear, setIsAuthenticated])
 
 	return {
 		user: data?.findProfile,
