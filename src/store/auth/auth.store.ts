@@ -1,7 +1,9 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
-import type { User } from '@/graphql/generated/output'
+import type { FindProfileQuery } from '@/graphql/generated/output'
+
+type User = NonNullable<FindProfileQuery['findProfile']>
 
 interface AuthState {
 	isAuthenticated: boolean
