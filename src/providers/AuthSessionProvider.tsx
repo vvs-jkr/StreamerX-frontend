@@ -14,7 +14,7 @@ export function AuthSessionProvider({
 	const pathname = usePathname()
 	const router = useRouter()
 	const { isAuthenticated } = useAuth()
-	const { isLoadingProfile } = useCurrent()
+	const { isLoadingProfile, user } = useCurrent()
 
 	const isLoginRoute = pathname === '/account/login'
 	const isRegisterRoute = pathname === '/account/create'
@@ -39,6 +39,11 @@ export function AuthSessionProvider({
 					return
 				}
 
+				if (isAuthenticated && !user && isProtectedRoute) {
+					await router.replace('/account/login')
+					return
+				}
+
 				if (isAuthenticated && (isLoginRoute || isRegisterRoute)) {
 					await router.replace('/dashboard/settings')
 					return
@@ -55,8 +60,17 @@ export function AuthSessionProvider({
 		isLoginRoute,
 		isRegisterRoute,
 		router,
-		isLoadingProfile
+		isLoadingProfile,
+		user
 	])
+
+	if (isLoadingProfile) {
+		return (
+			<div className='flex h-screen w-full items-center justify-center'>
+				<div className='h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent' />
+			</div>
+		)
+	}
 
 	return <>{children}</>
 }
