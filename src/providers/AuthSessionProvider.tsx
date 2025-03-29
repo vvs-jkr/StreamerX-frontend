@@ -1,10 +1,15 @@
 'use client'
 
 import { usePathname, useRouter } from 'next/navigation'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 
 import { useAuth } from '@/hooks/useAuth'
 import { useCurrent } from '@/hooks/useCurrent'
+
+type RedirectStrategy = {
+	shouldRedirect: () => boolean
+	getRedirectPath: () => string
+}
 
 export function AuthSessionProvider({
 	children
@@ -15,41 +20,56 @@ export function AuthSessionProvider({
 	const router = useRouter()
 	const { isAuthenticated } = useAuth()
 	const { isLoadingProfile, user } = useCurrent()
+	const [isInitialLoad, setIsInitialLoad] = useState(true)
 
 	const isLoginRoute = pathname === '/account/login'
 	const isRegisterRoute = pathname === '/account/create'
-	const isHomeRoute = pathname === '/'
 	const isAuthRoute = pathname.startsWith('/account')
-
 	const isProtectedRoute =
 		pathname.startsWith('/dashboard') ||
 		pathname.startsWith('/profile') ||
 		pathname.startsWith('/stream') ||
-		pathname.startsWith('/settings') ||
-		pathname === '/account/deactivate' ||
-		(!isHomeRoute && !isAuthRoute)
+		pathname.startsWith('/settings')
+
+	const redirectStrategies: RedirectStrategy[] = [
+		{
+			shouldRedirect: () =>
+				!isAuthenticated && isProtectedRoute && !isLoadingProfile,
+			getRedirectPath: () => '/account/login'
+		},
+		{
+			shouldRedirect: () =>
+				isAuthenticated &&
+				!user &&
+				isProtectedRoute &&
+				!isLoadingProfile,
+			getRedirectPath: () => '/account/login'
+		},
+		{
+			shouldRedirect: () =>
+				isAuthenticated &&
+				user &&
+				(isLoginRoute || isRegisterRoute) &&
+				!isLoadingProfile,
+			getRedirectPath: () => '/dashboard'
+		}
+	]
 
 	useEffect(() => {
-		if (isLoadingProfile) return
-
 		const redirect = async () => {
 			try {
-				if (!isAuthenticated && isProtectedRoute) {
-					await router.replace('/account/login')
-					return
-				}
-
-				if (isAuthenticated && !user && isProtectedRoute) {
-					await router.replace('/account/login')
-					return
-				}
-
-				if (isAuthenticated && (isLoginRoute || isRegisterRoute)) {
-					await router.replace('/dashboard/settings')
-					return
+				const strategy = redirectStrategies.find(s =>
+					s.shouldRedirect()
+				)
+				if (strategy) {
+					await router.replace(strategy.getRedirectPath())
 				}
 			} catch (error) {
 				console.error('Navigation failed:', error)
+			} finally {
+				if (!isLoadingProfile) {
+					setIsInitialLoad(false)
+				}
 			}
 		}
 
@@ -61,15 +81,27 @@ export function AuthSessionProvider({
 		isRegisterRoute,
 		router,
 		isLoadingProfile,
-		user
+		user,
+		redirectStrategies
 	])
 
-	if (isLoadingProfile) {
+	if (
+		isInitialLoad ||
+		(isLoadingProfile && (isProtectedRoute || isAuthenticated))
+	) {
 		return (
-			<div className='flex h-screen w-full items-center justify-center'>
+			<div className='fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm'>
 				<div className='h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent' />
 			</div>
 		)
+	}
+
+	if (!isAuthenticated && isProtectedRoute) {
+		return null
+	}
+
+	if (isAuthenticated && !user && isProtectedRoute) {
+		return null
 	}
 
 	return <>{children}</>

@@ -1,12 +1,15 @@
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 
+import { useClearSessionCookieMutation } from '@/graphql/generated/output'
+
 import { authStore } from '@/store/auth/auth.store'
 
 export function useAuth() {
 	const router = useRouter()
 	const isAuthenticated = authStore(state => state.isAuthenticated)
 	const setIsAuthenticated = authStore(state => state.setIsAuthenticated)
+	const [clearSession] = useClearSessionCookieMutation()
 
 	useEffect(() => {
 		const checkSessionCookie = () => {
@@ -24,7 +27,9 @@ export function useAuth() {
 			if (isAuthenticated !== hasValidSession) {
 				setIsAuthenticated(hasValidSession)
 				if (!hasValidSession && isAuthenticated) {
-					router.replace('/')
+					clearSession()
+					localStorage.clear()
+					sessionStorage.clear()
 				}
 			}
 		}
@@ -37,20 +42,17 @@ export function useAuth() {
 			clearInterval(interval)
 			window.removeEventListener('storage', checkSessionCookie)
 		}
-	}, [isAuthenticated, setIsAuthenticated, router])
+	}, [isAuthenticated, setIsAuthenticated, clearSession])
 
 	const auth = () => {
 		setIsAuthenticated(true)
 	}
 
-	const exit = () => {
+	const exit = async () => {
+		await clearSession()
 		setIsAuthenticated(false)
-		const cookies = document.cookie.split(';')
-		cookies.forEach(cookie => {
-			const [name] = cookie.split('=')
-			document.cookie = `${name.trim()}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=${window.location.hostname}`
-		})
-		router.replace('/')
+		localStorage.clear()
+		sessionStorage.clear()
 	}
 
 	return {

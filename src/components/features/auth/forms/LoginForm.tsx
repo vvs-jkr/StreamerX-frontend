@@ -35,39 +35,42 @@ import { AuthWrapper } from '../AuthWrapper'
 
 export function LoginForm() {
 	const t = useTranslations('auth.login')
-
 	const { auth } = useAuth()
-
 	const router = useRouter()
-
 	const [isShowTwoFactor, setIsShowTwoFactor] = useState(false)
+	const [serverError, setServerError] = useState<string | null>(null)
 
 	const form = useForm<TypeLoginSchema>({
 		resolver: zodResolver(loginSchema),
 		defaultValues: {
 			login: '',
-			password: ''
-		}
+			password: '',
+			pin: ''
+		},
+		mode: 'onChange'
 	})
 
 	const [login, { loading: isLoadingLogin }] = useLoginUserMutation({
 		onCompleted(data) {
 			if (data.loginUser.message) {
 				setIsShowTwoFactor(true)
+				setServerError(null)
 			} else {
 				auth()
 				toast.success(t('successMessage'))
 				router.push('/dashboard/settings')
 			}
 		},
-		onError() {
+		onError(error) {
+			setServerError(error.message)
 			toast.error(t('errorMessage'))
 		}
 	})
 
-	const { isValid } = form.formState
+	const { isValid, errors } = form.formState
 
 	function onSubmit(data: TypeLoginSchema) {
+		setServerError(null)
 		login({ variables: { data } })
 	}
 
@@ -104,6 +107,7 @@ export function LoginForm() {
 									<FormDescription>
 										{t('pinDescription')}
 									</FormDescription>
+									<FormMessage />
 								</FormItem>
 							)}
 						/>
@@ -120,7 +124,7 @@ export function LoginForm() {
 												placeholder='johndoe'
 												disabled={isLoadingLogin}
 												data-state={
-													form.formState.errors.login
+													errors.login || serverError
 														? 'error'
 														: undefined
 												}
@@ -156,8 +160,8 @@ export function LoginForm() {
 												type='password'
 												disabled={isLoadingLogin}
 												data-state={
-													form.formState.errors
-														.password
+													errors.password ||
+													serverError
 														? 'error'
 														: undefined
 												}

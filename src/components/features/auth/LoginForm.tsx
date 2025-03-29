@@ -52,7 +52,7 @@ const LoginForm: React.FC = () => {
 		onCompleted() {
 			auth()
 			toast.success(t('login.success'))
-			router.replace('/dashboard/settings')
+			router.replace('/dashboard')
 		},
 		onError(error) {
 			toast.error(error.message)

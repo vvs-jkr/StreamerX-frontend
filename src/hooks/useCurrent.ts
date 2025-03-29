@@ -9,11 +9,13 @@ import { authStore } from '@/store/auth/auth.store'
 
 export function useCurrent() {
 	const isAuthenticated = authStore(state => state.isAuthenticated)
-	const setIsAuthenticated = authStore(state => state.setIsAuthenticated)
+	const setUser = authStore(state => state.setUser)
+	const clearAuth = authStore(state => state.clearAuth)
 
 	const { data, loading, refetch, error } = useFindProfileQuery({
 		skip: !isAuthenticated,
-		fetchPolicy: 'network-only'
+		fetchPolicy: 'cache-and-network',
+		nextFetchPolicy: 'cache-first'
 	})
 	const [clear] = useClearSessionCookieMutation()
 
@@ -22,16 +24,11 @@ export function useCurrent() {
 			if (isAuthenticated) {
 				clear()
 			}
-			setIsAuthenticated(false)
-			localStorage.clear()
-			sessionStorage.clear()
-			const cookies = document.cookie.split(';')
-			cookies.forEach(cookie => {
-				const [name] = cookie.split('=')
-				document.cookie = `${name.trim()}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=${window.location.hostname}`
-			})
+			clearAuth()
+		} else if (data?.findProfile) {
+			setUser(data.findProfile)
 		}
-	}, [error, isAuthenticated, clear, setIsAuthenticated])
+	}, [error, data?.findProfile, isAuthenticated, clear, clearAuth, setUser])
 
 	return {
 		user: data?.findProfile,
