@@ -25,27 +25,13 @@ import { Notifications } from './notifications/Notifications'
 export function ProfileMenu() {
 	const t = useTranslations('layout.header.headerMenu.profileMenu')
 	const router = useRouter()
-
 	const { exit } = useAuth()
 	const { user, isLoadingProfile } = useCurrent()
 
 	const [logout] = useLogoutUserMutation({
 		onCompleted() {
-			localStorage.clear()
-			sessionStorage.clear()
-
-			document.cookie.split(';').forEach(function (c) {
-				document.cookie = c
-					.replace(/^ +/, '')
-					.replace(
-						/=.*/,
-						'=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/'
-					)
-			})
-
 			exit()
 			toast.success(t('successMessage'))
-
 			setTimeout(() => {
 				window.location.href = '/'
 			}, 100)

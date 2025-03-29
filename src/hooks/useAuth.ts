@@ -11,23 +11,37 @@ export function useAuth() {
 			const cookies = document.cookie.split(';')
 			const hasSessionCookie = cookies.some(
 				cookie =>
-					cookie.trim().startsWith('session=') && cookie.length > 10
+					cookie.trim().startsWith('session=') &&
+					cookie.trim().length > 10
 			)
-
-			if (isAuthenticated !== hasSessionCookie) {
-				setIsAuthenticated(hasSessionCookie)
-			}
+			setIsAuthenticated(hasSessionCookie)
 		}
 
 		checkSessionCookie()
 
-		const interval = setInterval(checkSessionCookie, 5000)
+		const interval = setInterval(checkSessionCookie, 1000)
+		window.addEventListener('storage', checkSessionCookie)
 
-		return () => clearInterval(interval)
-	}, [isAuthenticated, setIsAuthenticated])
+		return () => {
+			clearInterval(interval)
+			window.removeEventListener('storage', checkSessionCookie)
+		}
+	}, [setIsAuthenticated])
 
 	const auth = () => setIsAuthenticated(true)
-	const exit = () => setIsAuthenticated(false)
+	const exit = () => {
+		setIsAuthenticated(false)
+		localStorage.clear()
+		sessionStorage.clear()
+		document.cookie.split(';').forEach(c => {
+			document.cookie = c
+				.trim()
+				.replace(
+					/=.*/,
+					'=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/'
+				)
+		})
+	}
 
 	return {
 		isAuthenticated,

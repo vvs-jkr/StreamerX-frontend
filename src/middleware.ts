@@ -5,7 +5,7 @@ export default function middleware(request: NextRequest) {
 
 	const sessionCookie = cookies.get('session')
 	const hasValidSession =
-		sessionCookie?.value && sessionCookie.value.length > 10
+		sessionCookie?.value && sessionCookie.value.trim().length > 10
 
 	const isAuthRoute = nextUrl.pathname.startsWith('/account')
 	const isDeactivateRoute = nextUrl.pathname === '/account/deactivate'
@@ -27,15 +27,27 @@ export default function middleware(request: NextRequest) {
 
 	if (!hasValidSession && isProtectedRoute) {
 		const response = NextResponse.redirect(new URL('/account/login', url))
-		response.headers.set('Cache-Control', 'no-store, max-age=0')
+		response.headers.set(
+			'Cache-Control',
+			'no-store, no-cache, must-revalidate'
+		)
 		return response
 	}
 
 	if (hasValidSession && (isLoginRoute || isRegisterRoute)) {
-		return NextResponse.redirect(new URL('/dashboard/settings', url))
+		const response = NextResponse.redirect(
+			new URL('/dashboard/settings', url)
+		)
+		response.headers.set(
+			'Cache-Control',
+			'no-store, no-cache, must-revalidate'
+		)
+		return response
 	}
 
-	return NextResponse.next()
+	const response = NextResponse.next()
+	response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate')
+	return response
 }
 
 export const config = {

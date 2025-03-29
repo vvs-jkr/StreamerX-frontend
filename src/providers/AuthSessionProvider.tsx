@@ -14,9 +14,10 @@ export function AuthSessionProvider({
 	const router = useRouter()
 	const { isAuthenticated } = useAuth()
 
-	const isLoginRoute = pathname.startsWith('/account/login')
-	const isRegisterRoute = pathname.startsWith('/account/create')
+	const isLoginRoute = pathname === '/account/login'
+	const isRegisterRoute = pathname === '/account/create'
 	const isHomeRoute = pathname === '/'
+	const isAuthRoute = pathname.startsWith('/account')
 
 	const isProtectedRoute =
 		pathname.startsWith('/dashboard') ||
@@ -24,18 +25,19 @@ export function AuthSessionProvider({
 		pathname.startsWith('/stream') ||
 		pathname.startsWith('/settings') ||
 		pathname === '/account/deactivate' ||
-		(!isHomeRoute && !pathname.startsWith('/account'))
+		(!isHomeRoute && !isAuthRoute)
 
 	useEffect(() => {
 		if (!isAuthenticated && isProtectedRoute) {
-			router.push('/account/login')
+			router.replace('/account/login')
+			return
 		}
 
 		if (isAuthenticated && (isLoginRoute || isRegisterRoute)) {
-			router.push('/dashboard/settings')
+			router.replace('/dashboard/settings')
+			return
 		}
 	}, [
-		pathname,
 		isAuthenticated,
 		isProtectedRoute,
 		isLoginRoute,
