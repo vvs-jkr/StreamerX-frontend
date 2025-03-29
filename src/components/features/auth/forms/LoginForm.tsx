@@ -60,7 +60,7 @@ export function LoginForm() {
 			if (data.loginUser.message) {
 				setIsShowTwoFactor(true)
 				setServerError(null)
-			} else if (data.loginUser.token) {
+			} else if (data.loginUser.user) {
 				auth()
 				toast.success(t('successMessage'))
 				router.push('/dashboard/settings')
