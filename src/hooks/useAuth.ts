@@ -30,6 +30,7 @@ export function useAuth() {
 					clearSession()
 					localStorage.clear()
 					sessionStorage.clear()
+					router.replace('/account/login')
 				}
 			}
 		}
@@ -42,7 +43,7 @@ export function useAuth() {
 			clearInterval(interval)
 			window.removeEventListener('storage', checkSessionCookie)
 		}
-	}, [isAuthenticated, setIsAuthenticated, clearSession])
+	}, [isAuthenticated, setIsAuthenticated, clearSession, router])
 
 	const auth = () => {
 		setIsAuthenticated(true)
@@ -53,6 +54,7 @@ export function useAuth() {
 		setIsAuthenticated(false)
 		localStorage.clear()
 		sessionStorage.clear()
+		router.replace('/account/login')
 	}
 
 	return {

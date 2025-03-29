@@ -67,7 +67,7 @@ export function LoginForm() {
 		}
 	})
 
-	const { isValid, errors } = form.formState
+	const { isValid, errors, touchedFields } = form.formState
 
 	function onSubmit(data: TypeLoginSchema) {
 		setServerError(null)
@@ -124,7 +124,9 @@ export function LoginForm() {
 												placeholder='johndoe'
 												disabled={isLoadingLogin}
 												data-state={
-													errors.login || serverError
+													(touchedFields.login &&
+														errors.login) ||
+													serverError
 														? 'error'
 														: undefined
 												}
@@ -160,7 +162,8 @@ export function LoginForm() {
 												type='password'
 												disabled={isLoadingLogin}
 												data-state={
-													errors.password ||
+													(touchedFields.password &&
+														errors.password) ||
 													serverError
 														? 'error'
 														: undefined

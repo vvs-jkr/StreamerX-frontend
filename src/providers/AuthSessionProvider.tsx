@@ -29,7 +29,9 @@ export function AuthSessionProvider({
 		pathname.startsWith('/dashboard') ||
 		pathname.startsWith('/profile') ||
 		pathname.startsWith('/stream') ||
-		pathname.startsWith('/settings')
+		pathname.startsWith('/settings') ||
+		pathname.startsWith('/categories') ||
+		pathname.startsWith('/users')
 
 	const redirectStrategies: RedirectStrategy[] = [
 		{
