@@ -24,8 +24,7 @@ export default function middleware(request: NextRequest) {
 		isProfileRoute ||
 		isStreamRoute ||
 		isSettingsRoute ||
-		isDeactivateRoute ||
-		(!isHomeRoute && !isAuthRoute)
+		isDeactivateRoute
 
 	if (!hasValidSession && isProtectedRoute) {
 		const response = NextResponse.redirect(new URL('/account/login', url))
