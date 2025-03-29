@@ -27,7 +27,6 @@ export function AuthSessionProvider({
 		(!isHomeRoute && !pathname.startsWith('/account'))
 
 	useEffect(() => {
-		// Дополнительная проверка на клиенте
 		if (!isAuthenticated && isProtectedRoute) {
 			router.push('/account/login')
 		}
@@ -35,7 +34,14 @@ export function AuthSessionProvider({
 		if (isAuthenticated && (isLoginRoute || isRegisterRoute)) {
 			router.push('/dashboard/settings')
 		}
-	}, [pathname, isAuthenticated])
+	}, [
+		pathname,
+		isAuthenticated,
+		isProtectedRoute,
+		isLoginRoute,
+		isRegisterRoute,
+		router
+	])
 
 	return <>{children}</>
 }

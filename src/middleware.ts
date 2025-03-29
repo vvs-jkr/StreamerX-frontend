@@ -3,7 +3,6 @@ import { type NextRequest, NextResponse } from 'next/server'
 export default function middleware(request: NextRequest) {
 	const { url, cookies, nextUrl } = request
 
-	// Проверяем не только наличие куки, но и её значение
 	const sessionCookie = cookies.get('session')
 	const hasValidSession =
 		sessionCookie?.value && sessionCookie.value.length > 10
@@ -26,15 +25,12 @@ export default function middleware(request: NextRequest) {
 		isDeactivateRoute ||
 		(!isHomeRoute && !isAuthRoute)
 
-	// Если нет действительной сессии и страница защищенная - редирект на логин
 	if (!hasValidSession && isProtectedRoute) {
-		// Устанавливаем дополнительный заголовок для сброса кэша браузера
 		const response = NextResponse.redirect(new URL('/account/login', url))
 		response.headers.set('Cache-Control', 'no-store, max-age=0')
 		return response
 	}
 
-	// Если есть сессия и попытка зайти на страницы логина/регистрации - редирект в дашборд
 	if (hasValidSession && (isLoginRoute || isRegisterRoute)) {
 		return NextResponse.redirect(new URL('/dashboard/settings', url))
 	}
