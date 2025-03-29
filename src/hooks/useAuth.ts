@@ -9,37 +9,36 @@ export function useAuth() {
 	useEffect(() => {
 		const checkSessionCookie = () => {
 			const cookies = document.cookie.split(';')
-			const hasSessionCookie = cookies.some(
-				cookie =>
-					cookie.trim().startsWith('session=') &&
-					cookie.trim().length > 10
+			const sessionCookie = cookies.find(cookie =>
+				cookie.trim().startsWith('session=')
 			)
-			setIsAuthenticated(hasSessionCookie)
+			const hasValidSession =
+				sessionCookie && sessionCookie.trim().split('=')[1]?.length > 32
+			if (isAuthenticated !== hasValidSession) {
+				setIsAuthenticated(hasValidSession)
+			}
 		}
 
 		checkSessionCookie()
-
-		const interval = setInterval(checkSessionCookie, 1000)
+		const interval = setInterval(checkSessionCookie, 3000)
 		window.addEventListener('storage', checkSessionCookie)
 
 		return () => {
 			clearInterval(interval)
 			window.removeEventListener('storage', checkSessionCookie)
 		}
-	}, [setIsAuthenticated])
+	}, [isAuthenticated, setIsAuthenticated])
 
 	const auth = () => setIsAuthenticated(true)
+
 	const exit = () => {
 		setIsAuthenticated(false)
 		localStorage.clear()
 		sessionStorage.clear()
-		document.cookie.split(';').forEach(c => {
-			document.cookie = c
-				.trim()
-				.replace(
-					/=.*/,
-					'=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/'
-				)
+		const cookies = document.cookie.split(';')
+		cookies.forEach(cookie => {
+			const [name] = cookie.split('=')
+			document.cookie = `${name.trim()}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=${window.location.hostname}`
 		})
 	}
 

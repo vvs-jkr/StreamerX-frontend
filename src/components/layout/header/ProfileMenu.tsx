@@ -33,17 +33,19 @@ export function ProfileMenu() {
 			exit()
 			toast.success(t('successMessage'))
 			setTimeout(() => {
-				window.location.href = '/'
-			}, 100)
+				router.replace('/')
+			}, 500)
 		},
 		onError() {
 			toast.error(t('errorMessage'))
 		}
 	})
 
-	return isLoadingProfile || !user ? (
-		<Loader className='size-6 animate-spin text-muted-foreground' />
-	) : (
+	if (isLoadingProfile || !user) {
+		return <Loader className='size-6 animate-spin text-muted-foreground' />
+	}
+
+	return (
 		<>
 			<Notifications />
 			<DropdownMenu>

@@ -5,7 +5,9 @@ export default function middleware(request: NextRequest) {
 
 	const sessionCookie = cookies.get('session')
 	const hasValidSession =
-		sessionCookie?.value && sessionCookie.value.trim().length > 10
+		sessionCookie?.value &&
+		sessionCookie.value.trim().length > 32 &&
+		!sessionCookie.value.includes('undefined')
 
 	const isAuthRoute = nextUrl.pathname.startsWith('/account')
 	const isDeactivateRoute = nextUrl.pathname === '/account/deactivate'
@@ -29,7 +31,7 @@ export default function middleware(request: NextRequest) {
 		const response = NextResponse.redirect(new URL('/account/login', url))
 		response.headers.set(
 			'Cache-Control',
-			'no-store, no-cache, must-revalidate'
+			'private, no-cache, no-store, must-revalidate'
 		)
 		return response
 	}
@@ -40,13 +42,16 @@ export default function middleware(request: NextRequest) {
 		)
 		response.headers.set(
 			'Cache-Control',
-			'no-store, no-cache, must-revalidate'
+			'private, no-cache, no-store, must-revalidate'
 		)
 		return response
 	}
 
 	const response = NextResponse.next()
-	response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate')
+	response.headers.set(
+		'Cache-Control',
+		'private, no-cache, no-store, must-revalidate'
+	)
 	return response
 }
 

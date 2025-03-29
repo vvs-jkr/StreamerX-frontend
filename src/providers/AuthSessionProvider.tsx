@@ -4,6 +4,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 
 import { useAuth } from '@/hooks/useAuth'
+import { useCurrent } from '@/hooks/useCurrent'
 
 export function AuthSessionProvider({
 	children
@@ -13,6 +14,7 @@ export function AuthSessionProvider({
 	const pathname = usePathname()
 	const router = useRouter()
 	const { isAuthenticated } = useAuth()
+	const { isLoadingProfile } = useCurrent()
 
 	const isLoginRoute = pathname === '/account/login'
 	const isRegisterRoute = pathname === '/account/create'
@@ -28,21 +30,32 @@ export function AuthSessionProvider({
 		(!isHomeRoute && !isAuthRoute)
 
 	useEffect(() => {
-		if (!isAuthenticated && isProtectedRoute) {
-			router.replace('/account/login')
-			return
+		if (isLoadingProfile) return
+
+		const redirect = async () => {
+			try {
+				if (!isAuthenticated && isProtectedRoute) {
+					await router.replace('/account/login')
+					return
+				}
+
+				if (isAuthenticated && (isLoginRoute || isRegisterRoute)) {
+					await router.replace('/dashboard/settings')
+					return
+				}
+			} catch (error) {
+				console.error('Navigation failed:', error)
+			}
 		}
 
-		if (isAuthenticated && (isLoginRoute || isRegisterRoute)) {
-			router.replace('/dashboard/settings')
-			return
-		}
+		redirect()
 	}, [
 		isAuthenticated,
 		isProtectedRoute,
 		isLoginRoute,
 		isRegisterRoute,
-		router
+		router,
+		isLoadingProfile
 	])
 
 	return <>{children}</>
