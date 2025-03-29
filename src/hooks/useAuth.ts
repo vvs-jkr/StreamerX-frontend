@@ -12,8 +12,13 @@ export function useAuth() {
 			const sessionCookie = cookies.find(cookie =>
 				cookie.trim().startsWith('session=')
 			)
-			const hasValidSession =
-				sessionCookie && sessionCookie.trim().split('=')[1]?.length > 32
+			const sessionValue = sessionCookie?.trim().split('=')[1]
+			const hasValidSession = Boolean(
+				sessionValue &&
+					sessionValue.length > 32 &&
+					!sessionValue.includes('undefined')
+			)
+
 			if (isAuthenticated !== hasValidSession) {
 				setIsAuthenticated(hasValidSession)
 			}
