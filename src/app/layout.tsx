@@ -13,6 +13,7 @@ import {
 import { APP_URL } from '@/libs/constants/url.constants'
 
 import { ApolloClientProvider } from '@/providers/ApolloClientProvider'
+import { AuthSessionProvider } from '@/providers/AuthSessionProvider'
 import { ThemeProvider } from '@/providers/ThemeProvider'
 import { ToastProvider } from '@/providers/ToastProvider'
 
@@ -98,7 +99,9 @@ export default async function RootLayout({
 							disableTransitionOnChange
 						>
 							<ToastProvider />
-							{children}
+							<AuthSessionProvider>
+								{children}
+							</AuthSessionProvider>
 						</ThemeProvider>
 					</NextIntlClientProvider>
 				</ApolloClientProvider>

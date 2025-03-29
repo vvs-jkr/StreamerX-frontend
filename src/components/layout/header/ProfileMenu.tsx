@@ -16,6 +16,7 @@ import {
 import { ChannelAvatar } from '@/components/ui/elements/ChannelAvatar'
 
 import { useLogoutUserMutation } from '@/graphql/generated/output'
+import { useClearSessionCookieMutation } from '@/graphql/generated/output'
 
 import { useAuth } from '@/hooks/useAuth'
 import { useCurrent } from '@/hooks/useCurrent'
@@ -29,10 +30,15 @@ export function ProfileMenu() {
 	const { exit } = useAuth()
 	const { user, isLoadingProfile } = useCurrent()
 
+	const [clearSessionCookie] = useClearSessionCookieMutation()
+
 	const [logout] = useLogoutUserMutation({
 		onCompleted() {
+			// Шаг 1: Очищаем все локальные хранилища
 			localStorage.clear()
 			sessionStorage.clear()
+
+			// Шаг 2: Очищаем все куки
 			document.cookie.split(';').forEach(function (c) {
 				document.cookie = c
 					.replace(/^ +/, '')
@@ -41,9 +47,22 @@ export function ProfileMenu() {
 						'=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/'
 					)
 			})
-			exit()
-			toast.success(t('successMessage'))
-			window.location.href = '/' // Принудительная перезагрузка страницы и переход на главную
+
+			// Шаг 3: Вызываем дополнительную мутацию для очистки сессионной куки на сервере
+			clearSessionCookie()
+				.catch(console.error)
+				.finally(() => {
+					// Шаг 4: Обновляем состояние аутентификации
+					exit()
+
+					// Шаг 5: Показываем уведомление
+					toast.success(t('successMessage'))
+
+					// Шаг 6: Выполняем принудительное перенаправление
+					setTimeout(() => {
+						window.location.href = '/'
+					}, 100)
+				})
 		},
 		onError() {
 			toast.error(t('errorMessage'))
