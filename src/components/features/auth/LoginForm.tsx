@@ -61,7 +61,7 @@ const LoginForm: React.FC = () => {
 	const onSubmit = async (data: LoginFormData) => {
 		await login({
 			variables: {
-				input: {
+				data: {
 					login: data.login.trim(),
 					password: data.password
 				}
