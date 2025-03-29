@@ -1,11 +1,11 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useTranslations } from 'next-intl'
 import { useRouter } from 'next/navigation'
-import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
 
+import { Button } from '@/components/ui/common/Button'
 import { Input } from '@/components/ui/common/Input'
 
 import { useCreateUserMutation } from '@/graphql/generated/output'
@@ -15,102 +15,118 @@ import { useAuth } from '@/hooks/useAuth'
 const createAccountSchema = z.object({
 	username: z
 		.string()
-		.min(3, 'Имя пользователя должно содержать минимум 3 символа'),
-	email: z.string().email('Введите корректный email'),
-	password: z.string().min(6, 'Пароль должен содержать минимум 6 символов')
+		.min(3, 'Имя пользователя должно содержать минимум 3 символа')
+		.max(32, 'Имя пользователя не может быть длиннее 32 символов')
+		.regex(
+			/^[a-zA-Z0-9_-]+$/,
+			'Имя пользователя может содержать только буквы, цифры, - и _'
+		)
+		.trim(),
+	email: z
+		.string()
+		.email('Введите корректный email')
+		.min(3, 'Email должен содержать минимум 3 символа')
+		.max(64, 'Email не может быть длиннее 64 символов'),
+	password: z
+		.string()
+		.min(6, 'Пароль должен содержать минимум 6 символов')
+		.max(64, 'Пароль не может быть длиннее 64 символов')
+		.regex(
+			/^[a-zA-Z0-9!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]+$/,
+			'Пароль содержит недопустимые символы'
+		)
 })
 
 type CreateAccountFormData = z.infer<typeof createAccountSchema>
 
-const CreateAccountForm: React.FC = () => {
-	const t = useTranslations()
+const CreateAccountForm = () => {
+	const t = useTranslations('auth')
 	const router = useRouter()
 	const { auth } = useAuth()
-	const [isLoading, setIsLoading] = useState(false)
 
-	const [createUser] = useCreateUserMutation({
+	const {
+		register,
+		handleSubmit,
+		formState: { errors, isSubmitting, isValid }
+	} = useForm<CreateAccountFormData>({
+		resolver: zodResolver(createAccountSchema),
+		mode: 'onChange'
+	})
+
+	const [createUser, { loading }] = useCreateUserMutation({
 		onCompleted() {
 			auth()
-			toast.success(t('successMessage'))
-			router.push('/dashboard/settings')
+			toast.success(t('register.success'))
+			router.replace('/dashboard/settings')
 		},
 		onError(error) {
 			toast.error(error.message)
 		}
 	})
 
-	const {
-		register,
-		handleSubmit,
-		formState: { errors }
-	} = useForm<CreateAccountFormData>({
-		resolver: zodResolver(createAccountSchema)
-	})
-
 	const onSubmit = async (data: CreateAccountFormData) => {
-		try {
-			setIsLoading(true)
-			await createUser({
-				variables: {
-					data: {
-						username: data.username,
-						email: data.email,
-						password: data.password
-					}
+		await createUser({
+			variables: {
+				data: {
+					username: data.username.trim(),
+					email: data.email.trim(),
+					password: data.password
 				}
-			})
-		} catch (error) {
-			console.error(error)
-		} finally {
-			setIsLoading(false)
-		}
+			}
+		})
 	}
 
 	return (
-		<form onSubmit={handleSubmit(onSubmit)}>
-			<Input
-				type='text'
-				placeholder={t('username.placeholder')}
-				{...register('username')}
-				data-state={errors.username ? 'error' : undefined}
-				disabled={isLoading}
-			/>
-			{errors.username && (
-				<p className='mt-1 text-sm text-destructive'>
-					{errors.username.message}
-				</p>
-			)}
-			<Input
-				type='email'
-				placeholder={t('email.placeholder')}
-				{...register('email')}
-				data-state={errors.email ? 'error' : undefined}
-				disabled={isLoading}
-			/>
-			{errors.email && (
-				<p className='mt-1 text-sm text-destructive'>
-					{errors.email.message}
-				</p>
-			)}
-			<Input
-				type='password'
-				placeholder={t('password.placeholder')}
-				{...register('password')}
-				data-state={errors.password ? 'error' : undefined}
-				disabled={isLoading}
-			/>
-			{errors.password && (
-				<p className='mt-1 text-sm text-destructive'>
-					{errors.password.message}
-				</p>
-			)}
-			<button
+		<form onSubmit={handleSubmit(onSubmit)} className='flex flex-col gap-4'>
+			<div className='space-y-2'>
+				<Input
+					type='text'
+					placeholder={t('username.placeholder')}
+					{...register('username')}
+					error={errors.username?.message}
+					disabled={isSubmitting || loading}
+				/>
+				{errors.username && (
+					<p className='text-sm text-destructive'>
+						{errors.username.message}
+					</p>
+				)}
+			</div>
+			<div className='space-y-2'>
+				<Input
+					type='email'
+					placeholder={t('email.placeholder')}
+					{...register('email')}
+					error={errors.email?.message}
+					disabled={isSubmitting || loading}
+				/>
+				{errors.email && (
+					<p className='text-sm text-destructive'>
+						{errors.email.message}
+					</p>
+				)}
+			</div>
+			<div className='space-y-2'>
+				<Input
+					type='password'
+					placeholder={t('password.placeholder')}
+					{...register('password')}
+					error={errors.password?.message}
+					disabled={isSubmitting || loading}
+				/>
+				{errors.password && (
+					<p className='text-sm text-destructive'>
+						{errors.password.message}
+					</p>
+				)}
+			</div>
+			<Button
 				type='submit'
-				disabled={isLoading}
-				className='mt-4 w-full rounded-md bg-primary px-4 py-2 text-white hover:bg-primary/90 disabled:opacity-50'
+				disabled={isSubmitting || loading || !isValid}
+				className='w-full'
 			>
-				{isLoading ? t('loading') : t('submit')}
-			</button>
+				{loading ? t('register.loading') : t('register.submit')}
+			</Button>
 		</form>
 	)
 }

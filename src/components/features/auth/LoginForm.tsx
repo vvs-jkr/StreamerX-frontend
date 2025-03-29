@@ -81,7 +81,7 @@ const LoginForm: React.FC = () => {
 					disabled={isSubmitting || loading}
 				/>
 				{errors.login && (
-					<p className='text-sm text-red-500'>
+					<p className='text-sm text-destructive'>
 						{errors.login.message}
 					</p>
 				)}
@@ -95,7 +95,7 @@ const LoginForm: React.FC = () => {
 					disabled={isSubmitting || loading}
 				/>
 				{errors.password && (
-					<p className='text-sm text-red-500'>
+					<p className='text-sm text-destructive'>
 						{errors.password.message}
 					</p>
 				)}
