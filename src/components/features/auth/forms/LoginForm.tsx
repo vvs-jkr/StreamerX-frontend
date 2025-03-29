@@ -52,17 +52,26 @@ export function LoginForm() {
 
 	const [login, { loading: isLoadingLogin }] = useLoginUserMutation({
 		onCompleted(data) {
+			if (!data.loginUser) {
+				setServerError('Неверные учетные данные')
+				return
+			}
+
 			if (data.loginUser.message) {
 				setIsShowTwoFactor(true)
 				setServerError(null)
-			} else {
+			} else if (data.loginUser.token) {
 				auth()
 				toast.success(t('successMessage'))
 				router.push('/dashboard/settings')
+			} else {
+				setServerError('Ошибка авторизации')
 			}
 		},
 		onError(error) {
 			setServerError(error.message)
+			form.setError('login', { message: error.message })
+			form.setError('password', { message: error.message })
 			toast.error(t('errorMessage'))
 		}
 	})
@@ -71,6 +80,7 @@ export function LoginForm() {
 
 	function onSubmit(data: TypeLoginSchema) {
 		setServerError(null)
+		form.clearErrors()
 		login({ variables: { data } })
 	}
 
